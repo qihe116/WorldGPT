@@ -167,19 +167,48 @@ def usa_ch_pages():  # 美股 中概股 需要休市时候运行 否则可能会
     df.to_excel('tonghuashun-us-zgg.xlsx', index=False)
 # usa_ch_pages()
 
-def a_info(stock_id):
-    # url = f'https://stockpage.10jqka.com.cn/{str(stock_id)}/company/#detail'
-    url = 'https://stockpage.10jqka.com.cn/839946/'
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36'}
+# def a_info(stock_id):
+#     # url = f'https://stockpage.10jqka.com.cn/{str(stock_id)}/company/#detail'
+#     url = 'https://stockpage.10jqka.com.cn/000002/company/'
+#     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36'}
+#     req = urllib.request.Request(url=url, headers=headers)
+#     response = urllib.request.urlopen(req, timeout=2)
+#     content = response.read()
+#     html = BeautifulSoup(content, 'lxml')
+#     print(html)
+#     with open('test.html', 'w', encoding='utf8') as f:
+#         f.write(html.decode())
+#     div = html.find_all('div', class_='m_box company_overview company_detail')
+#     print(len(div))
+#     print(div)
+# a_info(839946)
+
+def hk_info(id_):
+    url = f'https://basic.10jqka.com.cn/{id_}/company.html'
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36'}
     req = urllib.request.Request(url=url, headers=headers)
     response = urllib.request.urlopen(req, timeout=2)
     content = response.read()
     html = BeautifulSoup(content, 'lxml')
-    # print(html)
-    div = html.find_all('div', class_='m_box company_overview company_detail')
-    print(len(div))
-    print(div)
-a_info(839946)
+    tbody = html.find_all('tbody')
+    tds = tbody[0].find_all('td')
+    res = {}
+    for i in tds:
+        pattern = re.compile(r'(.*\s*.*\s*)[：:](\s*.*\s*.*\s*.*\s*.*\s*.*\s*.*\s*.*\s*.*\s*)')
+        # pattern = re.compile(r'(.*)[：:](.*)', flags=re.DOTALL)
+        key_value = pattern.findall(i.text)
+        # print(key_value)
+        key_, value_ = key_value[0]
+        print(key_.strip(), value_.strip())
+        res[key_.strip()] = value_.strip()
+        # break
+hk_info('HK2068')
+
+
+# pattern = re.compile(r'(\S*)[：:](\s*\S*)')
+# print(pattern.findall('主营业务： 工程勘察、设计及咨询、工程及施工承包、装备制造及贸易。'))
+
 
 ```
 
