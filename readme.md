@@ -209,6 +209,22 @@ hk_info('HK2068')
 # pattern = re.compile(r'(\S*)[：:](\s*\S*)')
 # print(pattern.findall('主营业务： 工程勘察、设计及咨询、工程及施工承包、装备制造及贸易。'))
 
+#240415
+import urllib.request
+proxy_handler = urllib.request.ProxyHandler({'http': 'http://127.0.0.1:8000'})
+opener = urllib.request.build_opener(proxy_handler)
+urllib.request.install_opener(opener)
+response = urllib.request.urlopen('http://httpbin.org/ip')
+print(response.read().decode())
+
+import requests
+proxies = {
+    "http": "http://127.0.0.1:8000",
+    "https": "http://127.0.0.1:8000",}
+response = requests.get('http://httpbin.org/ip',proxies=proxies)
+print(response.content.decode())
+
+
 
 ```
 
