@@ -224,6 +224,63 @@ proxies = {
 response = requests.get('http://httpbin.org/ip',proxies=proxies)
 print(response.content.decode())
 
+#240418
+import io
+import re
+import os
+import pymongo
+from PIL import Image
+import py7zr
+
+def check_ch(s):
+    pattern_ch = re.compile(r'[\u4e00-\u9fa5]+')
+    res = pattern_ch.findall(s)
+    if len(res) == 1 and len(s) == len(res[0]) and len(s) < 5:
+        return True
+    else:
+        return False
+
+
+class MongoDB:
+    def __init__(self, collection_name='imgs_star_spider'):
+        self.myclient = pymongo.MongoClient("mongodb://192.168.230.128:27017/")
+        self.db = self.myclient['mydb']
+        self.collection = self.db[collection_name]
+
+    def insert_one_img(self, name, one_img_path):
+        with open(one_img_path, 'rb') as f:
+            data = f.read()
+            self.collection.insert_one({'name': name, 'img': data})
+
+    def insert_imgs(self, imgs_path):
+        names = os.listdir(imgs_path)
+        for i in names:
+            for j in os.listdir(os.path.join(imgs_path, i)):
+                self.insert_one_img(i, os.path.join(imgs_path, i, j))
+
+    def show_imgs(self, name):
+        imgs = self.collection.find({'name': name})
+        data = [x for x in imgs]
+        print('find img nums:', len(data))
+        for i in data:
+            img = Image.open(io.BytesIO(i['img']))
+            img.show()
+            break
+
+
+def py_zip(path):
+    with py7zr.SevenZipFile(path, mode='r') as z:
+        z.extractall()
+
+
+if __name__ == '__main__':
+    pass
+    # print(check_ch('你好你好'))
+    mydb = MongoDB()
+    # mydb.insert_one_img('井柏然', r'D:\lqh\beta240314\name_img\井柏然\井柏然-1.jpg')
+    # mydb.insert_imgs('name_img')
+    mydb.show_imgs('吴京')
+
 
 
 ```
